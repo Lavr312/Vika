@@ -1,0 +1,59 @@
+version: "3" # Specify the version of Docker Compose.
+
+services:
+
+  rabbit_mq:
+    image: rabbitmq:3.10.7-management # Use the RabbitMQ Docker image with the management plugin.
+    container_name: rabbit_mq # Assign a custom name to the RabbitMQ container.
+    hostname: rabbitmq # Set the hostname for the RabbitMQ container.
+    restart: always # Ensure that the container restarts automatically if it exits.
+    ports:
+        - '15672:15672' # Map the RabbitMQ management UI port to the host machine.
+    volumes:
+      - rabbit_mqdata:/usr/share/rabbitmq/data # Create a volume for RabbitMQ data storage.
+
+  producer1:
+    build: producer1 # Build the 'producer' service using the Dockerfile in the 'producer' directory.
+    depends_on:
+        - rabbit_mq # Specify that the 'producer' service depends on the 'rabbit_mq' service.
+    volumes:
+      - ./producer1:/usr/src/app/producer1 # Mount the 'producer' code into the 'producer' service container.
+      
+  producer2:
+    build: producer2 # Build the 'producer' service using the Dockerfile in the 'producer' directory.
+    depends_on:
+        - rabbit_mq # Specify that the 'producer' service depends on the 'rabbit_mq' service.
+    volumes:
+      - ./producer2:/usr/src/app/producer2 # Mount the 'producer' code into the 'producer' service container.
+      
+  producer3:
+    build: producer3 # Build the 'producer' service using the Dockerfile in the 'producer' directory.
+    depends_on:
+        - rabbit_mq # Specify that the 'producer' service depends on the 'rabbit_mq' service.
+    volumes:
+      - ./producer3:/usr/src/app/producer3 # Mount the 'producer' code into the 'producer' service container.
+
+  consumer1:
+    build: consumer1
+    depends_on:
+        - rabbit_mq
+    volumes:
+      - ./consumer1:/usr/src/app/consumer1
+      
+  consumer2:
+    build: consumer2
+    depends_on:
+        - rabbit_mq
+    volumes:
+      - ./consumer2:/usr/src/app/consumer2
+      
+  consumer3:
+    build: consumer3
+    depends_on:
+        - rabbit_mq
+    volumes:
+      - ./consumer3:/usr/src/app/consumer3
+
+volumes:
+    rabbit_mqdata:
+      driver: local # Define a local volume named 'rabbit_mqdata'.
